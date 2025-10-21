@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 	"os"
 	"os/signal"
-	"log"
 	"time"
-
+	"github.com/kolesico/FocusGuard/monitor"
 )
 
 func main() {
