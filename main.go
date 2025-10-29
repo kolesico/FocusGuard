@@ -7,7 +7,8 @@ import (
 	"os"
 	"os/signal"
 	"time"
-	"github.com/kolesico/FocusGuard/monitor"
+	"github.com/kolesico/FocusGuard/internal/services/monitor"
+	"github.com/kolesico/FocusGuard/internal/services/client"
 )
 
 func main() {
@@ -22,5 +23,6 @@ func main() {
 
 	for event := range events {
 		log.Printf("%s: %s %s", event.Timestamp.Format(time.RFC3339), *appName, event.Type)
+		client.SendEvent(*appName, event)
 	}
 }

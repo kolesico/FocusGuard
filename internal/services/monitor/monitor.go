@@ -9,8 +9,8 @@ import (
 )
 
 type Event struct {
-    Type      string
-    Timestamp time.Time
+    Type      string `json:"type"`
+    Timestamp time.Time `json:"timestamp"`
 }
 
 func RunMonitor(ctx context.Context, appName string) <-chan Event {
@@ -30,7 +30,7 @@ func RunMonitor(ctx context.Context, appName string) <-chan Event {
 				isFocused := isWindowFocused(appName)
 				currentState := "closed"
 				if isFocused {
-					currentState = "running"
+					currentState = "opened"
 				}
 				if currentState != lastState {
 					events <- Event{Type: currentState, Timestamp: time.Now()}
