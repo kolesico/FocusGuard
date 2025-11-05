@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"github.com/kolesico/FocusGuard/internal/monitor"
+
+	"github.com/kolesico/FocusGuard/internal/model"
 )
 
-func SendRequest(serverUri string, event monitor.Event) {
+func SendRequest(serverUri string, event model.Event) {
+
 	data, err := createPostRequest(event)
 	if err != nil {
 		log.Fatal("Ошибка при кодировании Event в json", err)
@@ -35,7 +37,7 @@ func SendRequest(serverUri string, event monitor.Event) {
 	log.Printf("Ответ от сервера: %T\n", resp.Status)
 }
 
-func createPostRequest(event monitor.Event) ([]byte, error) {
+func createPostRequest(event model.Event) ([]byte, error) {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return nil, err

@@ -6,15 +6,12 @@ import (
 	"fmt"
 	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/windows"
+	"github.com/kolesico/FocusGuard/internal/model"
 )
 
-type Event struct {
-    Type      string `json:"type"`
-    Timestamp time.Time `json:"timestamp"`
-}
 
-func RunMonitor(ctx context.Context, appName string) <-chan Event {
-    events := make(chan Event)
+func RunMonitor(ctx context.Context, appName string) <-chan model.Event {
+    events := make(chan model.Event)
 	
 	go func() {
 		defer close(events)
@@ -33,7 +30,7 @@ func RunMonitor(ctx context.Context, appName string) <-chan Event {
 					currentState = "opened"
 				}
 				if currentState != lastState {
-					events <- Event{Type: currentState, Timestamp: time.Now()}
+					events <- model.Event{Type: currentState, Timestamp: time.Now()}
 					lastState = currentState
 				}
 			}
