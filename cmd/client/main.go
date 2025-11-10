@@ -12,6 +12,8 @@ import (
 )
 
 func main() {
+	serverUri := "http://localhost:8080"
+
 	appName := flag.String("app", "Telegram.exe", "name of app for monitor")
 
 	flag.Parse()
@@ -23,6 +25,6 @@ func main() {
 
 	for event := range events {
 		log.Printf("%s: %s %s", event.Timestamp.Format(time.RFC3339), *appName, event.Type)
-		go client.SendRequest(*appName, event)
+		go client.SendRequest(&serverUri, event)
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/kolesico/FocusGuard/internal/model"
 )
 
-func SendRequest(serverUri string, event model.Event) {
+func SendRequest(serverUri *string, event model.Event) {
 
 	data, err := createPostRequest(event)
 	if err != nil {
@@ -17,7 +17,7 @@ func SendRequest(serverUri string, event model.Event) {
 		return
 	}
 
-	req, err := http.NewRequest("POST", serverUri, bytes.NewBuffer(data))
+	req, err := http.NewRequest("POST", *serverUri, bytes.NewBuffer(data))
 	if err != nil {
 		log.Fatal("Ошибка при создании запроса ", err)
 		return
