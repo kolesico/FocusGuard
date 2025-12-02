@@ -4,8 +4,7 @@ import (
 	"time"
 )
 
-
-type Event struct {
-    Type      string `json:"type"`
-    Timestamp time.Time `json:"timestamp"`
+type Events struct {
+	Event     string    `json:"type"`
+	Timestamp time.Time `json:"timestamp"`
 }

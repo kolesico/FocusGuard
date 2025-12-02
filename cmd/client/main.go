@@ -7,24 +7,24 @@ import (
 	"os"
 	"os/signal"
 	"time"
-	"github.com/kolesico/FocusGuard/internal/monitor"
+
 	"github.com/kolesico/FocusGuard/internal/client"
+	"github.com/kolesico/FocusGuard/internal/monitor"
 )
 
 func main() {
-	serverUri := "http://localhost:8080"
 
 	appName := flag.String("app", "Telegram.exe", "name of app for monitor")
-
+	serverUri := flag.String("server-uri", "http://127.0.0.1:8080/events", "server uri")
 	flag.Parse()
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	events := monitor.RunMonitor(ctx, *appName)
+	events := monitor.RunMonitor(ctx, appName)
 
 	for event := range events {
 		log.Printf("%s: %s %s", event.Timestamp.Format(time.RFC3339), *appName, event.Type)
-		go client.SendRequest(&serverUri, event)
+		go client.SendRequest(serverUri, event)
 	}
 }

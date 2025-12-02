@@ -2,17 +2,17 @@ package monitor
 
 import (
 	"context"
-	"time"
 	"fmt"
+	"time"
+
+	"github.com/kolesico/FocusGuard/internal/model"
 	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/windows"
-	"github.com/kolesico/FocusGuard/internal/model"
 )
 
+func RunMonitor(ctx context.Context, appName *string) <-chan model.Events {
+	events := make(chan model.Events)
 
-func RunMonitor(ctx context.Context, appName string) <-chan model.Event {
-    events := make(chan model.Event)
-	
 	go func() {
 		defer close(events)
 		ticker := time.NewTicker(1 * time.Second)
@@ -21,16 +21,16 @@ func RunMonitor(ctx context.Context, appName string) <-chan model.Event {
 		var lastState string
 		for {
 			select {
-			case <- ctx.Done():
+			case <-ctx.Done():
 				return
-			case <- ticker.C:
-				isFocused := isWindowFocused(appName)
+			case <-ticker.C:
+				isFocused := isWindowFocused(*appName)
 				currentState := "closed"
 				if isFocused {
 					currentState = "opened"
 				}
 				if currentState != lastState {
-					events <- model.Event{Type: currentState, Timestamp: time.Now()}
+					events <- model.Events{Event: currentState, Timestamp: time.Now()}
 					lastState = currentState
 				}
 			}
@@ -54,18 +54,18 @@ func isWindowFocused(appName string) bool {
 
 func getActiveProcessName() (string, error) {
 	// Получаем handle активного окна
-    hwnd := windows.GetForegroundWindow()
-    
-    // Получаем ID процесса
-    var processID uint32
-    _, err := windows.GetWindowThreadProcessId(hwnd, &processID)
-    if err != nil {
-        return "", fmt.Errorf("ошибка получения ID процесса: %v", err)
-    }
+	hwnd := windows.GetForegroundWindow()
+
+	// Получаем ID процесса
+	var processID uint32
+	_, err := windows.GetWindowThreadProcessId(hwnd, &processID)
+	if err != nil {
+		return "", fmt.Errorf("fialed to get process ID: %v", err)
+	}
 
 	processes, err := process.Processes()
 	if err != nil {
-		return "", fmt.Errorf("ошибка получения списка процессов: %v", err)
+		return "", fmt.Errorf("failed to get list of proccess: %v", err)
 	}
 
 	for _, process := range processes {
