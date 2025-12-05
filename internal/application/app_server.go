@@ -2,16 +2,18 @@ package application
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 
 	"github.com/kolesico/FocusGuard/internal/config"
-	"github.com/kolesico/FocusGuard/internal/database"
 	"github.com/kolesico/FocusGuard/internal/logger"
+	"github.com/kolesico/FocusGuard/internal/controllers"
+	"github.com/kolesico/FocusGuard/internal/storage/sqlite"
 )
 
 type App struct {
 	cfg *config.Config
-	storage string
+	storage *sql.DB
 	log *slog.Logger
 }
 
@@ -33,12 +35,20 @@ func (a *App) Run() error {
 	defer cancel()
 
 	// Формируем подключение к БД
-	a.storage = database.NewConnection(ctx, a.cfg)
+	db, err := sqlite.NewConnection(ctx, a.cfg)
+	if err != nil {
+		a.log.Error("BD error", err)
+		return err
+	}
+	a.storage = db
+
+	// Инициализируем работу с методами БД репо
+	sqliteRepo := sqlite.NewSqliteRepository(a.storage)
 
 	a.log.Info("Database connect successfully")
 
 	// Инициализация хэндлеров
 
-	eventHandler := controllers.NewEventHandler()
+	eventHandler := controllers.NewEventsHandler(sqliteRepo, *a.log)
 
 }

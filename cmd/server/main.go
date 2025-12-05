@@ -17,7 +17,7 @@ func main() {
 	app, err := application.NewApp(*configPath)
 
 	if err != nil {
-		log.Fatal("Error initionalize application: %s", err)
+		log.Fatal("Error initionalize application")
 	}
 
 	if err := app.Run(); err != nil {

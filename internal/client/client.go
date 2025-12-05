@@ -6,10 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kolesico/FocusGuard/internal/model"
+	"github.com/kolesico/FocusGuard/internal/events"
 )
 
-func SendRequest(serverUri *string, event model.Event) {
+func SendRequest(serverUri *string, event events.Events) {
 
 	data, err := createPostRequest(event)
 	if err != nil {
@@ -37,7 +37,7 @@ func SendRequest(serverUri *string, event model.Event) {
 	log.Printf("Ответ от сервера: %T\n", resp.Status)
 }
 
-func createPostRequest(event model.Event) ([]byte, error) {
+func createPostRequest(event events.Events) ([]byte, error) {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return nil, err

@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kolesico/FocusGuard/internal/model"
+	"github.com/kolesico/FocusGuard/internal/events"
 	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/windows"
 )
 
-func RunMonitor(ctx context.Context, appName *string) <-chan model.Events {
-	events := make(chan model.Events)
+func RunMonitor(ctx context.Context, appName *string) <-chan events.Events {
+	eventsCh := make(chan events.Events)
 
 	go func() {
-		defer close(events)
+		defer close(eventsCh)
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
 
@@ -30,14 +30,14 @@ func RunMonitor(ctx context.Context, appName *string) <-chan model.Events {
 					currentState = "opened"
 				}
 				if currentState != lastState {
-					events <- model.Events{Event: currentState, Timestamp: time.Now()}
+					eventsCh <- events.Events{Event: currentState, Timestamp: time.Now()}
 					lastState = currentState
 				}
 			}
 		}
 
 	}()
-	return events
+	return eventsCh
 }
 
 func isWindowFocused(appName string) bool {
